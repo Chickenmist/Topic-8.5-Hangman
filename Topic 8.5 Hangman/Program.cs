@@ -10,6 +10,20 @@ namespace Topic_8._5_Hangman
 
         public static List<string> words = new List<string>() { "", "", "" };
 
+        public static List<string> wordLetters = new List<string>();
+
+        public static List<string> usedLetters = new List<string>();
+
+        public static Random rnd = new Random();
+
+        public static string wordSelection = "";
+
+        public static int incorrectGuesses = 0;
+
+        public static string letter = "";
+
+        public static string selectedLetter = "";
+
         static void Main(string[] args)
         {
             Console.Title = "Hangman";
@@ -31,7 +45,7 @@ namespace Topic_8._5_Hangman
 
                     if (selection == "GAME")
                     {
-                        Game();
+                        GameDifficultySelection();
                     }
                     else if (selection == "NEW")
                     {
@@ -65,64 +79,63 @@ namespace Topic_8._5_Hangman
             while (newWord == "")
             {
                 Console.Write("Type the word you want to add (cannot have spaces or special characters): ");
-                newWord = Console.ReadLine().ToUpper().Trim().Replace(" ", "");
-
-                Console.WriteLine((int)newWord[0]);
-            }
-
-            for (int i = 0; i < newWord.Length; i++)
-            {
-                if (newWord[i] < 65 || newWord[i] > 90) //65 is the value for A on the ASCII Table, 90 is the value for Z on the ASCII Table
+                newWord = Console.ReadLine().ToUpper();
+                
+                for (int i = 0; i < newWord.Length; i++)
                 {
-                    onlyLetters++;
+                    if (newWord[i] < 65 || newWord[i] > 90) //65 is the value for A on the ASCII Table, 90 is the value for Z on the ASCII Table
+                    {
+                        onlyLetters++;
+                    }
+                }
+                if (onlyLetters > 0 || words.Contains(newWord))
+                {
+                    Console.WriteLine("");
+                    Console.Write("Cannot add this word");
+                }
+                else
+                {
+                    words.Add(newWord);
+                    
+                    Console.WriteLine("");
+                    Console.Write("Word added");
                 }
             }
 
-            if (onlyLetters > 0 || words.Contains(newWord))
-            {
-                Console.WriteLine("");
-                Console.WriteLine("Cannot add this word");
-            }
-            else
-            {
-                words.Add(newWord);
-                
-                Console.WriteLine("");
-                Console.WriteLine("Word added");
-
-            }
-
+            Console.Read();
             Console.Clear();
         }
 
-        public static void Game()
+        public static void GameDifficultySelection()
         {
-            Random random = new Random();
-            int guesses, wordSelection;
             string difficulty;
-            bool gameActive = true, difficultyNotSelected = true;
+            bool difficultyNotSelected = true;
 
             Console.Clear();
+            
+            wordSelection = words[rnd.Next(words.Count - 1)];
 
+            SetWordLetters();
+            
             HangmanTitlePrint();
 
             while(difficultyNotSelected)
             {
                 Console.WriteLine("Please select a difficulty: ");
-                Console.WriteLine("Normal: 5 guesses");
-                Console.WriteLine("Hard: 3 guesses");
+                Console.WriteLine("Normal: 5 incorrect guesses");
+                Console.WriteLine("Hard: 3 incorrect guesses");
                 Console.Write("Difficulty: ");
                 difficulty = Console.ReadLine().ToUpper();
 
                 if (difficulty == "NORMAL")
                 {
-                    guesses = 5;
                     difficultyNotSelected = false;
+                    NormalGame();
                 }
                 else if (difficulty == "HARD")
                 {
-                    guesses = 3;
                     difficultyNotSelected = false;
+                    HardGame();
                 }
                 else
                 {
@@ -131,9 +144,32 @@ namespace Topic_8._5_Hangman
                     Console.WriteLine("");
                 }
             }
+        }
 
-            Console.Clear();
+        public static void NormalGame()
+        {
+            while (incorrectGuesses < 5)
+            {
+                letter = "";
 
+                Console.Clear();
+
+                HangmanTitlePrint();
+
+                DrawGallows();
+
+                RemainingGuesses();
+
+                PrintRevealedLetters();
+
+                
+                
+            }
+
+        }
+
+        public static void HardGame()
+        {
 
         }
 
@@ -144,6 +180,52 @@ namespace Topic_8._5_Hangman
             Console.WriteLine("||__|||__|||__|||__|||__|||__|||__||");
             Console.WriteLine("|/__\\|/__\\|/__\\|/__\\|/__\\|/__\\|/__\\|");
             Console.WriteLine("");
+        }
+
+        public static void DrawGallows()
+        {
+            Console.WriteLine("  +---+");
+            Console.WriteLine("  |   |");
+            Console.WriteLine("      |");
+            Console.WriteLine("      |");
+            Console.WriteLine("      |");
+            Console.WriteLine("      |");
+            Console.WriteLine("=========");
+            Console.WriteLine("");
+        }
+
+        public static void RemainingGuesses()
+        {
+            Console.WriteLine($"Incorrect guesses = {incorrectGuesses}");
+            Console.WriteLine("");
+        }
+
+        public static void SetWordLetters()
+        {
+            for (int i = 0; i < wordSelection.Length; i++)
+            {
+                wordLetters.Add("_");
+            }
+        }
+
+        public static void PrintRevealedLetters()
+        {
+            for (int i = 0; i < wordLetters.Count - 1; i++) 
+            {
+                Console.WriteLine(wordLetters[i]);
+            }
+        }
+
+        public static void MakeGuess()
+        {
+            while (letter == "")
+            {
+                Console.Write("Guess: ");
+                selectedLetter = Console.ReadLine().ToUpper();
+
+
+
+            }
         }
     }
 }
