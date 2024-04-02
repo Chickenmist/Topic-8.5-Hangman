@@ -8,11 +8,13 @@ namespace Topic_8._5_Hangman
         
         public static bool running = true;
 
-        public static List<string> words = new List<string>() { "", "", "" };
+        public static List<string> words = new List<string>() { "TEST" };
 
         public static List<string> wordLetters = new List<string>();
 
         public static List<string> usedLetters = new List<string>();
+
+        public static List<string> guessedLetters = new List<string>();
 
         public static Random rnd = new Random();
 
@@ -23,6 +25,8 @@ namespace Topic_8._5_Hangman
         public static string letter = "";
 
         public static string selectedLetter = "";
+
+        public static string difficulty = "";
 
         static void Main(string[] args)
         {
@@ -108,7 +112,6 @@ namespace Topic_8._5_Hangman
 
         public static void GameDifficultySelection()
         {
-            string difficulty;
             bool difficultyNotSelected = true;
 
             Console.Clear();
@@ -148,7 +151,7 @@ namespace Topic_8._5_Hangman
 
         public static void NormalGame()
         {
-            while (incorrectGuesses < 5)
+            while (incorrectGuesses < 6)
             {
                 letter = "";
 
@@ -162,7 +165,7 @@ namespace Topic_8._5_Hangman
 
                 PrintRevealedLetters();
 
-                
+                MakeGuess();
                 
             }
 
@@ -184,14 +187,92 @@ namespace Topic_8._5_Hangman
 
         public static void DrawGallows()
         {
-            Console.WriteLine("  +---+");
-            Console.WriteLine("  |   |");
-            Console.WriteLine("      |");
-            Console.WriteLine("      |");
-            Console.WriteLine("      |");
-            Console.WriteLine("      |");
-            Console.WriteLine("=========");
-            Console.WriteLine("");
+            if (difficulty == "NORMAL")
+            {
+                switch (incorrectGuesses)
+                {
+                    case 0:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine("");
+                        break;
+                        
+                    case 1:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine("");
+                        break;
+
+                    case 2:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine("");
+                        break;
+
+                    case 3:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine(" /|   |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine(""); 
+                        break;
+
+                    case 4:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine(" /|\\  |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine(""); 
+                        break;
+
+                    case 5:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine(" /|\\  |");
+                        Console.WriteLine(" /    |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine("");
+                        break;
+
+                    case 6:
+                        Console.WriteLine("  +---+");
+                        Console.WriteLine("  |   |");
+                        Console.WriteLine("  O   |");
+                        Console.WriteLine(" /|\\  |");
+                        Console.WriteLine(" / \\  |");
+                        Console.WriteLine("      |");
+                        Console.WriteLine("=========");
+                        Console.WriteLine("");
+                        break;
+                }
+            }
+            if (incorrectGuesses == 0)
+            {
+                
+            }
         }
 
         public static void RemainingGuesses()
@@ -210,21 +291,89 @@ namespace Topic_8._5_Hangman
 
         public static void PrintRevealedLetters()
         {
-            for (int i = 0; i < wordLetters.Count - 1; i++) 
+            for (int i = 0; i < wordLetters.Count; i++) 
             {
-                Console.WriteLine(wordLetters[i]);
+                Console.Write(wordLetters[i]);
             }
+            Console.WriteLine("");
+            Console.WriteLine("");
         }
 
         public static void MakeGuess()
         {
-            while (letter == "")
+            int notInWord = 0, alreadyGuessed = 0;
+
+            bool letterNotSelected = true;
+
+            while (letterNotSelected)
             {
+                alreadyGuessed = 0;
+
                 Console.Write("Guess: ");
-                selectedLetter = Console.ReadLine().ToUpper();
+                selectedLetter = Console.ReadLine().ToUpper().Trim();
 
+                if (selectedLetter.Length > 1 || selectedLetter.Length == 0) //This makes sure there is only one character in the guess 
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("Invalid Guess");
+                    Console.WriteLine("");
+                }
+                else if (guessedLetters.Contains(selectedLetter))
+                {
+                    Console.WriteLine("");
+                    Console.WriteLine("You have already guessed that letter");
+                    Console.WriteLine("");
+                }
+                else
+                {
+                    for (int i = 0; i < selectedLetter.Length; i++) //This makes sure that the guess is a letter
+                        {
+                            if (selectedLetter[i] < 65 || selectedLetter[i] > 90) //Considering that there is only one character in the string this shouldn't loop multiple times
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine("Invalid Guess");
+                                Console.WriteLine("");
+                            }
+                            else
+                            {
+                                letter = selectedLetter;
+                                letterNotSelected = false;
+                            }
+                    }
+                }       
+            }
+            
+            guessedLetters.Add(letter); //This adds the guessed letter to a list so that it can't be guessed again
+            
+            for (int i = 0; i < wordSelection.Length; i++) //Scans the word for the letter
+            {
+                if (letter == wordSelection[i] + "") //The letter is in that position in the word
+                {
+                    wordLetters[i] = letter;
+                }
+                else //The letter is not in that position in the word
+                {
+                    notInWord++;
+                }
+            }
 
+            if (notInWord >= wordSelection.Length) //If this happens then the letter was not in the word
+            {
+                incorrectGuesses++;
 
+                Console.WriteLine("");
+                Console.WriteLine("That letter was not in the word");
+                Console.WriteLine("");
+                Console.Write("Press enter to continue");
+                Console.ReadLine();
+            }
+            else //Letter was in the word
+            {
+                Console.WriteLine("");
+                Console.WriteLine("That letter was in the word");
+                Console.WriteLine("");
+                Console.Write("Press enter to continue");
+                Console.ReadLine();
             }
         }
     }
