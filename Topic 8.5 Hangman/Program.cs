@@ -6,7 +6,7 @@ namespace Topic_8._5_Hangman
     {
         //Wilson
         
-        public static List<string> words = new List<string>() { "DANTE", "VERGIL", "SPARDA", "YAMATO", "URIZEN" };
+        public static List<string> words = new List<string>() { "DANTE", "VERGIL", "SPARDA", "YAMATO", "URIZEN", "REDGRAVE" };
 
         public static List<string> wordLetters = new List<string>();
 
