@@ -6,13 +6,9 @@ namespace Topic_8._5_Hangman
     {
         //Wilson
         
-        public static bool running = true;
-
-        public static List<string> words = new List<string>() { "TEST" };
+        public static List<string> words = new List<string>() { "DANTE", "VERGIL", "SPARDA", "YAMATO", "URIZEN" };
 
         public static List<string> wordLetters = new List<string>();
-
-        public static List<string> usedLetters = new List<string>();
 
         public static List<string> guessedLetters = new List<string>();
 
@@ -30,6 +26,8 @@ namespace Topic_8._5_Hangman
 
         static void Main(string[] args)
         {
+            bool running = true;
+
             Console.Title = "Hangman";
 
             while(running)
@@ -89,8 +87,8 @@ namespace Topic_8._5_Hangman
             {
                 onlyLetters = 0;
 
-                Console.Write("    Type the word you want to add (cannot have spaces or special characters): ");
-                newWord = Console.ReadLine().ToUpper();
+                Console.Write("    Type the word you want to add (cannot have spaces or special characters and must be 4 letters or longer): ");
+                newWord = Console.ReadLine().ToUpper().Trim() ;
                 
                 for (int i = 0; i < newWord.Length; i++)
                 {
@@ -99,22 +97,22 @@ namespace Topic_8._5_Hangman
                         onlyLetters++;
                     }
                 }
-                if (onlyLetters > 0)
+                if (onlyLetters > 0) //This is if there are special characters in the word
                 {
                     Console.WriteLine("");
                     Console.WriteLine("    This word cannot be added as it does not contain only letters");
                     Console.WriteLine("");
                 }
-                else if (words.Contains(newWord))
+                else if (words.Contains(newWord)) //This is if the word is already in the pool
                 {
                     Console.WriteLine("");
                     Console.WriteLine("    This word is already in the word pool");
                     Console.WriteLine("");
                 }
-                else if (newWord == "")
+                else if (newWord.Length <= 3) //This ensures that the word is 4 letters or longer
                 {
                     Console.WriteLine("");
-                    Console.WriteLine("    Please enter a word");
+                    Console.WriteLine("    Please enter a word that is 4 letters or longer");
                     Console.WriteLine("");
                 }
                 else
@@ -139,7 +137,7 @@ namespace Topic_8._5_Hangman
 
             Console.Clear();
             
-            wordSelection = words[rnd.Next(words.Count - 1)];
+            wordSelection = words[rnd.Next(words.Count)];
 
             SetWordLetters();
             
@@ -181,6 +179,8 @@ namespace Topic_8._5_Hangman
 
             incorrectGuesses =  0;
 
+            guessedLetters.Clear();
+
             while (gameActive)
             {
                 if (incorrectGuesses < 6)
@@ -204,19 +204,28 @@ namespace Topic_8._5_Hangman
                     }
                     else
                     {
+                        Console.Clear();
+
                         HangmanTitlePrint();
 
                         Console.WriteLine("      +---+");
+                        Console.WriteLine("          |");
+                        Console.WriteLine("          |");
+                        Console.WriteLine("     \\O/  |");
                         Console.WriteLine("      |   |");
-                        Console.WriteLine("          |");
-                        Console.WriteLine("          |");
-                        Console.WriteLine("          |");
                         Console.WriteLine("     / \\  |");
                         Console.WriteLine("    =========");
                         Console.WriteLine("");
 
+                        RemainingGuesses();
+
+                        PrintRevealedLetters();
+
+                        PrintGuessedLetters();
+
                         Console.WriteLine("    You guessed the word! Well done!");
-                        Console.ReadLine();
+                        Console.Write("    You will be returned to the main menu in 5 seconds");
+                        Thread.Sleep(5000);
                         gameActive = false;
                     }
                     
@@ -236,15 +245,88 @@ namespace Topic_8._5_Hangman
                     PrintGuessedLetters();
 
                     GameOver();
+
+                    gameActive = false;
                 }
             }
-
-
         }
 
         public static void HardGame()
         {
+            bool gameActive = true;
 
+            incorrectGuesses = 0;
+
+            guessedLetters.Clear();
+
+            while (gameActive)
+            {
+                if (incorrectGuesses < 4)
+                {
+                    if (wordLetters.Contains("_"))
+                    {
+                        letter = "";
+                        Console.Clear();
+
+                        HangmanTitlePrint();
+
+                        DrawGallows();
+
+                        RemainingGuesses();
+
+                        PrintRevealedLetters();
+
+                        PrintGuessedLetters();
+
+                        MakeGuess();
+                    }
+                    else
+                    {
+                        Console.Clear();
+
+                        HangmanTitlePrint();
+
+                        Console.WriteLine("      +---+");
+                        Console.WriteLine("          |");
+                        Console.WriteLine("          |");
+                        Console.WriteLine("     \\O/  |");
+                        Console.WriteLine("      |   |");
+                        Console.WriteLine("     / \\  |");
+                        Console.WriteLine("    =========");
+                        Console.WriteLine("");
+
+                        RemainingGuesses();
+
+                        PrintRevealedLetters();
+
+                        PrintGuessedLetters();
+
+                        Console.WriteLine("    You guessed the word! Well done!");
+                        Console.Write("    You will be returned to the main menu in 5 seconds");
+                        Thread.Sleep(5000);
+                        gameActive = false;
+                    }
+
+                }
+                else if (incorrectGuesses == 4)
+                {
+                    Console.Clear();
+
+                    HangmanTitlePrint();
+
+                    DrawGallows();
+
+                    RemainingGuesses();
+
+                    PrintRevealedLetters();
+
+                    PrintGuessedLetters();
+
+                    GameOver();
+
+                    gameActive = false;
+                }
+            }
         }
 
         public static void HangmanTitlePrint()
@@ -410,6 +492,8 @@ namespace Topic_8._5_Hangman
 
         public static void SetWordLetters()
         {
+            wordLetters.Clear();
+
             for (int i = 0; i < wordSelection.Length; i++)
             {
                 wordLetters.Add("_");
@@ -446,6 +530,10 @@ namespace Topic_8._5_Hangman
 
             bool letterNotSelected = true;
 
+            selectedLetter = "";
+
+            letter = "";
+           
             while (letterNotSelected)
             {
                 Console.Write("    Guess: ");
@@ -486,7 +574,7 @@ namespace Topic_8._5_Hangman
             
             for (int i = 0; i < wordSelection.Length; i++) //Scans the word for the letter
             {
-                if (letter == wordSelection[i] + "") //The letter is in that position in the word
+                if (letter == wordSelection[i].ToString()) //The letter is in that position in the word
                 {
                     wordLetters[i] = letter;
                 }
@@ -520,16 +608,16 @@ namespace Topic_8._5_Hangman
         {
             if (difficulty == "NORMAL")
             {
-                Console.WriteLine("You have guessed incorrectly more than 5 times. You lose");
-
-                Console.WriteLine("You will be returned to the main menu in 5 seconds");
+                Console.WriteLine("    You have guessed incorrectly more than 5 times. You lose");
+                Console.WriteLine("");
+                Console.Write("    You will be returned to the main menu in 5 seconds");
                 Thread.Sleep(5000);
             }
             else if (difficulty == "HARD")
             {
-                Console.WriteLine("You have guessed incorrectly more than 3 times. You lose");
-
-                Console.WriteLine("You will be returned to the main menu in 5 seconds");
+                Console.WriteLine("    You have guessed incorrectly more than 3 times. You lose");
+                Console.WriteLine("");
+                Console.Write("    You will be returned to the main menu in 5 seconds");
                 Thread.Sleep(5000);
             }
         }
